@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>5-Week Mesocycle · Return to 8A+</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0a0a0f;
+    --surface: #0f0f1a;
+    --border: #1e1e2e;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --faint: #475569;
+    --blue: #60a5fa;
+    --orange: #f97316;
+    --gold: #fbbf24;
+    --purple: #a78bfa;
+    --green: #34d399;
+    --red: #f87171;
+  }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Courier New', monospace;
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(180deg, #111118 0%, var(--bg) 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 28px 20px 0;
+  }
+  .header-inner { max-width: 760px; margin: 0 auto; }
+  .eyebrow { font-size: 9px; letter-spacing: 0.35em; color: var(--green); font-weight: 700; margin-bottom: 6px; }
+  h1 { font-size: clamp(24px, 6vw, 38px); font-weight: 900; letter-spacing: -0.02em; color: #f8fafc; line-height: 1.1; }
+  .header-sub { font-size: 11px; color: var(--faint); margin-top: 5px; margin-bottom: 20px; }
+
+  /* MAIN NAV */
+  .main-nav {
+    display: flex;
+    border-top: 1px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .main-nav::-webkit-scrollbar { display: none; }
+  .nav-btn {
+    flex: 1 1 auto;
+    min-width: 60px;
+    padding: 13px 8px;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    font-family: 'Courier New', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    color: var(--faint);
+    white-space: nowrap;
+    transition: all 0.15s;
+  }
+  .nav-btn:hover { color: var(--text); }
+  .nav-btn.active { color: var(--text); border-bottom-color: var(--green); }
+
+  /* SECTIONS */
+  .section { display: none; max-width: 760px; margin: 0 auto; padding: 24px 20px 48px; }
+  .section.active { display: block; }
+
+  /* CARDS */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 18px;
+    margin-bottom: 10px;
+  }
+  .card-accent { border-left: 3px solid var(--accent, var(--green)); }
+  .card p { font-size: 12px; color: var(--muted); line-height: 1.8; }
+  .card p + p { margin-top: 8px; }
+
+  /* LABELS */
+  .lbl {
+    font-size: 9px;
+    letter-spacing: 0.28em;
+    color: var(--faint);
+    font-weight: 700;
+    margin-bottom: 10px;
+    margin-top: 22px;
+  }
+  .lbl:first-child { margin-top: 0; }
+
+  /* BADGES */
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    font-weight: 700;
+    margin-right: 5px;
+  }
+  .b-blue   { background: #60a5fa14; color: var(--blue); }
+  .b-orange { background: #f9731614; color: var(--orange); }
+  .b-gold   { background: #fbbf2414; color: var(--gold); }
+  .b-purple { background: #a78bfa14; color: var(--purple); }
+  .b-green  { background: #34d39914; color: var(--green); }
+  .b-red    { background: #f8717114; color: var(--red); }
+  .b-gray   { background: #1e1e2e; color: var(--faint); }
+
+  /* STAT GRID */
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 12px;
+    text-align: center;
+  }
+  .stat-n { font-size: 28px; font-weight: 900; line-height: 1; }
+  .stat-l { font-size: 9px; color: var(--faint); letter-spacing: 0.18em; margin-top: 5px; }
+
+  /* PHASE BANNERS */
+  .phase-banner {
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 8px;
+  }
+  .phase-banner-t { font-size: 12px; font-weight: 800; margin-bottom: 4px; }
+  .phase-banner-s { font-size: 11px; color: #94a3b8; line-height: 1.65; }
+
+  /* SKELETON TABLE */
+  .sk-table { width: 100%; border-collapse: collapse; }
+  .sk-table td { padding: 9px 6px; border-bottom: 1px solid var(--border); font-size: 12px; vertical-align: middle; }
+  .sk-table tr:last-child td { border-bottom: none; }
+  .sk-day { font-size: 10px; font-weight: 700; color: var(--text); width: 38px; }
+  .sk-desc { color: var(--muted); }
+  .sk-type { font-size: 9px; text-align: right; white-space: nowrap; letter-spacing: 0.1em; font-weight: 700; }
+
+  /* WEEK SELECTOR */
+  .week-sel { display: flex; gap: 6px; margin-bottom: 20px; }
+  .wbtn {
+    flex: 1 1 0;
+    padding: 10px 4px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'Courier New', monospace;
+    text-align: center;
+    transition: all 0.12s;
+  }
+  .wbtn:hover { opacity: 0.8; }
+  .wbtn .wn { font-size: 14px; font-weight: 900; color: var(--text); }
+  .wbtn .wl { font-size: 8px; letter-spacing: 0.12em; color: var(--faint); margin-top: 3px; }
+  .wbtn.on-blue   { background: var(--blue);   border-color: var(--blue); }
+  .wbtn.on-orange { background: var(--orange); border-color: var(--orange); }
+  .wbtn.on-gold   { background: var(--gold);   border-color: var(--gold); }
+  .wbtn.on-blue .wn, .wbtn.on-orange .wn, .wbtn.on-gold .wn { color: #000; }
+  .wbtn.on-blue .wl, .wbtn.on-orange .wl, .wbtn.on-gold .wl { color: rgba(0,0,0,0.65); }
+
+  /* WEEK NOTE */
+  .week-note {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.75;
+  }
+
+  /* DAY ACCORDION */
+  .day-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 7px;
+    overflow: hidden;
+  }
+  .day-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 15px;
+    cursor: pointer;
+    user-select: none;
+    gap: 8px;
+  }
+  .day-head:hover { background: #ffffff04; }
+  .day-left { display: flex; align-items: center; gap: 9px; flex: 1; min-width: 0; }
+  .day-d { font-size: 10px; font-weight: 700; color: var(--text); flex-shrink: 0; width: 34px; }
+  .day-t { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .day-arr { font-size: 9px; color: var(--faint); flex-shrink: 0; transition: transform 0.18s; }
+  .day-arr.open { transform: rotate(180deg); }
+  .day-body {
+    display: none;
+    padding: 4px 15px 14px;
+    border-top: 1px solid var(--border);
+  }
+  .day-body.open { display: block; }
+  .day-body p { font-size: 12px; color: var(--muted); line-height: 1.78; margin-top: 10px; }
+  .hl { color: var(--text); font-weight: 700; }
+
+  /* REST ROW */
+  .rest-row {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 11px 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 7px;
+  }
+  .rest-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--border); flex-shrink: 0; }
+  .rest-t { font-size: 12px; color: var(--faint); }
+
+  /* STRENGTH TOGGLE */
+  .str-sel { display: flex; gap: 8px; margin-bottom: 20px; }
+  .str-tab {
+    flex: 1;
+    padding: 13px 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+    font-family: 'Courier New', monospace;
+    transition: border-color 0.15s;
+  }
+  .str-tab .st { font-size: 10px; letter-spacing: 0.15em; font-weight: 700; color: var(--purple); }
+  .str-tab .sl { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .str-tab.active { border-color: var(--purple); }
+
+  /* EX TABLE */
+  .ex-wrap { overflow-x: auto; }
+  .ex-t { width: 100%; border-collapse: collapse; min-width: 420px; }
+  .ex-t th { font-size: 9px; letter-spacing: 0.2em; color: var(--faint); text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--border); }
+  .ex-t td { font-size: 12px; color: var(--muted); padding: 10px 10px; border-bottom: 1px solid #16162a; vertical-align: top; line-height: 1.5; }
+  .ex-t tr:last-child td { border-bottom: none; }
+  .ex-n { color: var(--text); font-weight: 700; }
+  .ex-s { color: var(--purple); font-weight: 700; white-space: nowrap; }
+  .ex-s-g { color: var(--green); font-weight: 700; white-space: nowrap; }
+
+  /* LOADING TABLE */
+  .load-row { display: grid; grid-template-columns: 120px 1fr; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 12px; }
+  .load-row:last-child { border-bottom: none; }
+  .load-lbl { color: var(--muted); line-height: 1.45; font-size: 11px; }
+  .load-val { color: var(--text); line-height: 1.6; }
+
+  /* MOBILITY */
+  .mob-item { display: flex; gap: 12px; padding: 13px 0; border-bottom: 1px solid var(--border); align-items: start; }
+  .mob-item:last-child { border-bottom: none; }
+  .mob-n { font-size: 11px; color: var(--green); font-weight: 700; flex-shrink: 0; width: 22px; }
+  .mob-name { font-size: 13px; color: var(--text); font-weight: 700; margin-bottom: 4px; }
+  .mob-d { font-size: 11px; color: var(--muted); line-height: 1.6; }
+  .mob-dur { font-size: 10px; color: var(--green); margin-top: 4px; font-weight: 700; }
+
+  /* PROG */
+  .prog-row { display: grid; grid-template-columns: 110px 1fr; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .prog-row:last-child { border-bottom: none; }
+  .prog-l { color: var(--muted); font-size: 11px; line-height: 1.5; }
+  .prog-v { color: var(--text); font-size: 12px; line-height: 1.65; }
+
+  /* BULLET ROWS */
+  .bul { display: flex; gap: 10px; font-size: 12px; color: var(--muted); padding: 8px 0; border-bottom: 1px solid var(--border); line-height: 1.6; }
+  .bul:last-child { border-bottom: none; }
+  .bul-dot { flex-shrink: 0; font-size: 9px; margin-top: 4px; }
+
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.45} }
+  .pulse { animation: pulse 2s infinite; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="eyebrow">5-WEEK MESOCYCLE · REPEATING PERFORMANCE SYSTEM</div>
+    <h1>RETURN TO 8A+</h1>
+    <p class="header-sub">Climbing · Strength · Mobility · Full integration · Oslo 2026</p>
+    <nav class="main-nav">
+      <button class="nav-btn active" onclick="showSec('overview',this)">OVERVIEW</button>
+      <button class="nav-btn" onclick="showSec('schedule',this)">SCHEDULE</button>
+      <button class="nav-btn" onclick="showSec('strength',this)">STRENGTH</button>
+      <button class="nav-btn" onclick="showSec('mobility',this)">MOBILITY</button>
+      <button class="nav-btn" onclick="showSec('progress',this)">PROGRESSION</button>
+    </nav>
+  </div>
+</div>
+
+<!-- ═══════════════ OVERVIEW ═══════════════ -->
+<div class="section active" id="sec-overview">
+
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-n" style="color:var(--blue)">5</div><div class="stat-l">WEEK CYCLE</div></div>
+    <div class="stat-card"><div class="stat-n" style="color:var(--orange)">6</div><div class="stat-l">SESSIONS/WK</div></div>
+    <div class="stat-card"><div class="stat-n" style="color:var(--purple)">2</div><div class="stat-l">STRENGTH/WK</div></div>
+    <div class="stat-card"><div class="stat-n" style="color:var(--green)">1</div><div class="stat-l">MOBILITY/WK</div></div>
+  </div>
+
+  <div class="lbl">CYCLE STRUCTURE</div>
+  <div class="phase-banner" style="background:#60a5fa10;border:1px solid #60a5fa28">
+    <div class="phase-banner-t" style="color:var(--blue)">WEEKS 1–2 · VOLUME</div>
+    <div class="phase-banner-s">High climbing volume at moderate intensity. 3–4 sessions, lots of problems, build load tolerance. Strength A+B at full volume. You won't feel your best — that's expected and correct. You're making deposits.</div>
+  </div>
+  <div class="phase-banner" style="background:#f9731610;border:1px solid #f9731628">
+    <div class="phase-banner-t" style="color:var(--orange)">WEEKS 3–4 · INTENSITY</div>
+    <div class="phase-banner-s">Volume drops ~30%, load goes up. Max hangs, limit bouldering, campus work (cycle 2+). Strength maintained at fewer sets. You're converting accumulated base into usable power. Should feel sharp around week 4.</div>
+  </div>
+  <div class="phase-banner" style="background:#fbbf2410;border:1px solid #fbbf2428">
+    <div class="phase-banner-t" style="color:var(--gold)">WEEK 5 · PEAK</div>
+    <div class="phase-banner-s">Volume drops 40–50%, intensity stays high. 2–3 climbing sessions. One light strength session. CNS is fresh, adaptation has caught up. This is the fruit — go at your limits and see what the previous 4 weeks built.</div>
+  </div>
+
+  <div class="lbl">WEEKLY SKELETON</div>
+  <div class="card" style="padding:12px 16px">
+    <table class="sk-table">
+      <tr><td class="sk-day">MON</td><td class="sk-desc">Climbing — Wall or Board</td><td class="sk-type" style="color:var(--blue)">CLIMB</td></tr>
+      <tr><td class="sk-day">TUE</td><td class="sk-desc">Strength A — Push + Legs</td><td class="sk-type" style="color:var(--purple)">STRENGTH</td></tr>
+      <tr><td class="sk-day">WED</td><td class="sk-desc">Climbing — Board Focus <span style="color:var(--orange)">+ Sauna</span></td><td class="sk-type" style="color:var(--blue)">CLIMB</td></tr>
+      <tr><td class="sk-day">THU</td><td class="sk-desc">Mobility + Active Recovery</td><td class="sk-type" style="color:var(--green)">MOBILITY</td></tr>
+      <tr><td class="sk-day">FRI</td><td class="sk-desc">Climbing — Project / Mixed</td><td class="sk-type" style="color:var(--blue)">CLIMB</td></tr>
+      <tr><td class="sk-day">SAT</td><td class="sk-desc">Strength B — Pull + Posterior <span style="color:var(--orange)">+ Sauna</span></td><td class="sk-type" style="color:var(--purple)">STRENGTH</td></tr>
+      <tr><td class="sk-day">SUN</td><td class="sk-desc">Full Rest</td><td class="sk-type" style="color:var(--faint)">REST</td></tr>
+    </table>
+  </div>
+
+  <div class="lbl">CYCLE 1 MODIFIER — YOU ARE HERE</div>
+  <div class="card card-accent" style="--accent:var(--red)">
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px">
+      <span class="badge b-red pulse">⚠ ACTIVE</span>
+      <span style="font-size:12px;font-weight:700;color:var(--text)">Re-adaptation override</span>
+    </div>
+    <p>Connective tissue is still catching up. For cycle 1 only: no max hangs until week 3, intensity ceiling one grade below current wall max in weeks 1–2, and campus board is excluded. Everything else runs as normal. From cycle 2, full template with no restrictions.</p>
+  </div>
+
+  <div class="lbl">SAUNA PROTOCOL</div>
+  <div class="card">
+    <div class="bul"><span class="bul-dot" style="color:var(--orange)">◆</span><span>Post-session only — Wednesday post-climbing, Saturday post-Strength B</span></div>
+    <div class="bul"><span class="bul-dot" style="color:var(--orange)">◆</span><span>15–20 min at 80–100°C. One round sufficient; two with a cold shower between if feeling good</span></div>
+    <div class="bul"><span class="bul-dot" style="color:var(--orange)">◆</span><span>500ml+ water before entering. Electrolytes post if sweating heavily</span></div>
+    <div class="bul"><span class="bul-dot" style="color:var(--orange)">◆</span><span>Skip sauna the evening before Week 5 peak sessions — mild CNS cost not worth it</span></div>
+    <div class="bul"><span class="bul-dot" style="color:var(--orange)">◆</span><span>Good on rest days too — passive blood flow and recovery without training load</span></div>
+  </div>
+
+  <div class="lbl">COLLAGEN PROTOCOL — EVERY CLIMBING SESSION</div>
+  <div class="card">
+    <p>15g collagen hydrolysate + 50mg vitamin C, taken 30–60 min before the session. Keith Baar's research (UC Davis, 2017) shows this window significantly upregulates collagen synthesis in tendons during the subsequent loading period. Cheap, no downside, strong evidence base. Non-negotiable for the first two cycles while connective tissue is still ramping back up post-injury.</p>
+  </div>
+
+</div>
+
+<!-- ═══════════════ SCHEDULE ═══════════════ -->
+<div class="section" id="sec-schedule">
+  <div class="week-sel" id="wsel"></div>
+  <div id="wcontent"></div>
+</div>
+
+<!-- ═══════════════ STRENGTH ═══════════════ -->
+<div class="section" id="sec-strength">
+
+  <div class="str-sel">
+    <div class="str-tab active" id="sta-a" onclick="showStr('a')">
+      <div class="st">SESSION A</div>
+      <div class="sl">Push + Legs</div>
+    </div>
+    <div class="str-tab" id="sta-b" onclick="showStr('b')">
+      <div class="st">SESSION B</div>
+      <div class="sl">Pull + Posterior</div>
+    </div>
+  </div>
+
+  <div id="str-a">
+    <div class="lbl">WARM-UP · 10 MIN</div>
+    <div class="card"><p>5 min bike or rower. Then: arm circles, band pull-aparts × 15, shoulder external rotation with band × 15, bodyweight squat × 10, hip circles. Get genuinely warm before loading — don't shortcut this.</p></div>
+
+    <div class="lbl">MAIN LIFTS</div>
+    <div class="card" style="padding:0 4px">
+      <div class="ex-wrap">
+        <table class="ex-t">
+          <tr><th style="width:40%">EXERCISE</th><th style="width:20%">SETS × REPS</th><th>NOTES</th></tr>
+          <tr><td><span class="ex-n">Back Squat</span></td><td><span class="ex-s">4 × 5</span></td><td>Working weight. Add 2.5–5kg per cycle. Full depth. This is your primary lower body mass and power builder.</td></tr>
+          <tr><td><span class="ex-n">Romanian Deadlift</span></td><td><span class="ex-s">3 × 8</span></td><td>3s controlled eccentric. Hamstring tension throughout. Not a stiff-leg deadlift — maintain the hip hinge.</td></tr>
+          <tr><td><span class="ex-n">Overhead Press</span></td><td><span class="ex-s">4 × 6</span></td><td>Strict, no leg drive. The single most important antagonist lift for climbing shoulder health. Add 1.25–2.5kg per cycle.</td></tr>
+          <tr><td><span class="ex-n">Bulgarian Split Squat</span></td><td><span class="ex-s">3 × 8</span></td><td>Rear foot elevated. Barbell or DBs. Single-leg stability transfers directly to high foot placements and precision stepping.</td></tr>
+          <tr><td><span class="ex-n">Face Pulls</span></td><td><span class="ex-s">3 × 15</span></td><td>Cable or band, shoulder height. External rotation at 90°. Non-negotiable for posterior shoulder health. Never skip these.</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="lbl">ACCESSORY · INJURY PREVENTION</div>
+    <div class="card" style="padding:0 4px">
+      <div class="ex-wrap">
+        <table class="ex-t">
+          <tr><th style="width:40%">EXERCISE</th><th style="width:20%">SETS × REPS</th><th>NOTES</th></tr>
+          <tr><td><span class="ex-n">Wrist Extensor Curls</span></td><td><span class="ex-s-g">3 × 15</span></td><td>Light dumbbell or rice bucket. Counteracts chronic flexor dominance from climbing. Your extensors are almost certainly undertrained.</td></tr>
+          <tr><td><span class="ex-n">Side-lying External Rotation</span></td><td><span class="ex-s-g">3 × 15</span></td><td>Dumbbell, strict and slow. Rotator cuff health. This is corrective work, not a strength exercise — control matters more than load.</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="lbl">LOADING ACROSS THE CYCLE</div>
+    <div class="card">
+      <div class="load-row"><div class="load-lbl">Weeks 1–2<br>Volume</div><div class="load-val">Full sets and reps as written. Establish your working weights — these are the baseline you'll build from each cycle.</div></div>
+      <div class="load-row"><div class="load-lbl">Weeks 3–4<br>Intensity</div><div class="load-val">Drop to 3 sets on main lifts. Keep the same load or go slightly heavier. Less volume, same stimulus.</div></div>
+      <div class="load-row"><div class="load-lbl">Week 5<br>Peak</div><div class="load-val">One combined light session (merge with B). 60% load, 3 × 5 on main lifts only. Move well, stay sharp, add zero fatigue.</div></div>
+    </div>
+  </div>
+
+  <div id="str-b" style="display:none">
+    <div class="lbl">WARM-UP · 10 MIN</div>
+    <div class="card"><p>5 min bike or rower. Then: band pull-aparts × 15, face pulls with band × 15, dead hang 20s at easy load, hip flexor stretch 30s each side, scapular pull-ups × 10. Prime the posterior chain and shoulder girdle before loading.</p></div>
+
+    <div class="lbl">MAIN LIFTS</div>
+    <div class="card" style="padding:0 4px">
+      <div class="ex-wrap">
+        <table class="ex-t">
+          <tr><th style="width:40%">EXERCISE</th><th style="width:20%">SETS × REPS</th><th>NOTES</th></tr>
+          <tr><td><span class="ex-n">Barbell Row</span></td><td><span class="ex-s">4 × 6</span></td><td>Pronated grip, torso ~45°. Row to lower chest. Full ROM. Drives scapular retraction and lockoff strength in a way hanging and climbing alone doesn't.</td></tr>
+          <tr><td><span class="ex-n">Weighted Pull-ups</span></td><td><span class="ex-s">4 × max</span></td><td>Add weight once you hit 12+ reps. Rotate grips: neutral, wide, close. Dead hang start. Structured sets hit motor patterns climbing doesn't fully cover.</td></tr>
+          <tr><td><span class="ex-n">Nordic Curl</span></td><td><span class="ex-s">3 × 6–8</span></td><td>Controlled descent, use hands to push up. Highest RFD hamstring exercise available. One of the best knee injury prevention movements — under-appreciated by climbers.</td></tr>
+          <tr><td><span class="ex-n">Hip Thrust</span></td><td><span class="ex-s">3 × 10</span></td><td>Barbell. Glute and hip extension power. Transfers to high steps, heel hooks, and explosive moves off the legs.</td></tr>
+          <tr><td><span class="ex-n">Single-arm DB Row</span></td><td><span class="ex-s">3 × 10</span></td><td>Unilateral. Addresses side-to-side imbalances common in climbers. Heavy, controlled. Lead with the elbow.</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="lbl">ACCESSORY · INJURY PREVENTION</div>
+    <div class="card" style="padding:0 4px">
+      <div class="ex-wrap">
+        <table class="ex-t">
+          <tr><th style="width:40%">EXERCISE</th><th style="width:20%">SETS × REPS</th><th>NOTES</th></tr>
+          <tr><td><span class="ex-n">Band ER at 90°</span></td><td><span class="ex-s-g">3 × 15</span></td><td>Arm abducted to shoulder height, rotate externally against band. Targets the posterior rotator cuff in the exact position stressed by climbing.</td></tr>
+          <tr><td><span class="ex-n">Finger Extensor Work</span></td><td><span class="ex-s-g">3 × 15</span></td><td>Rubber band around fingers, open against resistance. Low load, high reps. Balances the chronic flexor loading of every climbing session.</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="lbl">LOADING ACROSS THE CYCLE</div>
+    <div class="card">
+      <div class="load-row"><div class="load-lbl">Weeks 1–2<br>Volume</div><div class="load-val">Full sets and reps. Establish working weights. Pull-ups: note your max reps per set.</div></div>
+      <div class="load-row"><div class="load-lbl">Weeks 3–4<br>Intensity</div><div class="load-val">3 sets on main lifts. Same or slightly heavier load.</div></div>
+      <div class="load-row"><div class="load-lbl">Week 5<br>Peak</div><div class="load-val">Merge with Strength A into one light combined session. Or skip entirely if body feels loaded — peak week climbing takes priority.</div></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════ MOBILITY ═══════════════ -->
+<div class="section" id="sec-mobility">
+
+  <div class="card" style="margin-bottom:16px">
+    <p>Thursday session, ~45 min. These cover the four chronic problem areas for boulderers: hip flexors, thoracic spine, shoulder external rotation, and hamstrings. Don't rush through this — the return is cumulative tissue quality over months, not visible in any single session. Breathe into the stretches.</p>
+  </div>
+
+  <div class="lbl">FULL ROUTINE · ~45 MIN</div>
+  <div class="card">
+    <div class="mob-item">
+      <div class="mob-n">01</div>
+      <div>
+        <div class="mob-name">Couch Stretch</div>
+        <div class="mob-d">Rear knee on floor, front foot forward, upright torso. Drive hip forward. Critical for hip flexors shortened by sitting and by the hip flexion demands of climbing.</div>
+        <div class="mob-dur">2 min each side</div>
+      </div>
+    </div>
+    <div class="mob-item">
+      <div class="mob-n">02</div>
+      <div>
+        <div class="mob-name">Frog Pose</div>
+        <div class="mob-d">Knees wide, feet in line with knees, rock forward and back gently. Hip external rotation. Directly improves high foot placements and hip-to-wall positioning on steep terrain.</div>
+        <div class="mob-dur">3 min</div>
+      </div>
+    </div>
+    <div class="mob-item">
+      <div class="mob-n">03</div>
+      <div>
+        <div class="mob-name">Pancake Stretch</div>
+        <div class="mob-d">Seated straddle, fold forward with a flat back — hinge from the hip, don't round. Hamstrings and inner thigh flexibility. Improves drop-knee and flag positions significantly over time.</div>
+        <div class="mob-dur">3 min</div>
+      </div>
+    </div>
+    <div class="mob-item">
+      <div class="mob-n">04</div>
+      <div>
+        <div class="mob-name">90/90 Hip Rotations</div>
+        <div class="mob-d">Both legs at 90° on floor, rotate between internal and external rotation, hold at end range each side. Comprehensive hip mobility — addresses both anterior and posterior capsule.</div>
+        <div class="mob-dur">2 min each side</div>
+      </div>
+    </div>
+    <div class="mob-item">
+      <div class="mob-n">05</div>
+      <div>
+        <div class="mob-name">Thoracic Rotation over Foam Roller</div>
+        <div class="mob-d">Roller perpendicular to spine, segment-by-segment extension. Then seated rotation with arms crossed. T-spine mobility improves overhead reach and shoulder positioning — both critical for reachy problems.</div>
+        <div class="mob-dur">4 min</div>
+      </div>
+    </div>
+    <div class="mob-item">
+      <div class="mob-n">06</div>
+      <div>
+        <div class="mob-name">PNF Hamstring Stretch</div>
+        <div class="mob-d">Lying on back, leg up. Contract hamstring against band or partner for 5s, relax and deepen the stretch. Repeat × 3 each side. PNF consistently outperforms static stretching for ROM gains.</div>
+        <div class="mob-dur">3 min each side</div>
+      </div>
+    </div>
+    <div class="mob-item">
+      <div class="mob-n">07</div>
+      <div>
+        <div class="mob-name">Shoulder External Rotation Stretch</div>
+        <div class="mob-d">Doorframe or wall, arm at 90°, rotate body away. Counteracts the chronic internal rotation pattern from climbing. Should feel a deep stretch through the anterior shoulder and pec.</div>
+        <div class="mob-dur">2 min each side</div>
+      </div>
+    </div>
+    <div class="mob-item">
+      <div class="mob-n">08</div>
+      <div>
+        <div class="mob-name">Overhead Band Distraction</div>
+        <div class="mob-d">Band anchored low, loop around wrist, reach overhead and side-bend away. Shoulder capsule distraction. Improves overhead lockoff range and reduces impingement risk over time.</div>
+        <div class="mob-dur">2 min each side</div>
+      </div>
+    </div>
+    <div class="mob-item">
+      <div class="mob-n">09</div>
+      <div>
+        <div class="mob-name">Deep Squat Hold</div>
+        <div class="mob-d">Feet shoulder-width, heels down, hold bottom. Use a pole for assistance if needed initially. Ankle mobility, hip mobility, lower back decompression — one of the highest-ROI positions you can spend time in.</div>
+        <div class="mob-dur">3 min cumulative</div>
+      </div>
+    </div>
+    <div class="mob-item">
+      <div class="mob-n">10</div>
+      <div>
+        <div class="mob-name">Wrist Flexor / Extensor Stretch</div>
+        <div class="mob-d">Both directions, arm straight. Add gentle loaded stretch on all fours (push through palm). Essential maintenance for finger flexor tendon health — especially relevant during your hand injury recovery window.</div>
+        <div class="mob-dur">2 min each direction</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="lbl">OPTIONAL ADD-ONS</div>
+  <div class="card">
+    <p>If time or a specific area needs it: Jefferson Curl (light weight, controlled spinal flexion) for posterior chain flexibility. Cossack squat for lateral hip mobility. Pike stretch for combined calf and hamstring. These are bonus — not required every week, but useful when something feels chronically tight.</p>
+  </div>
+
+</div>
+
+<!-- ═══════════════ PROGRESSION ═══════════════ -->
+<div class="section" id="sec-progress">
+
+  <div class="lbl">CYCLE-TO-CYCLE PROGRESSION</div>
+  <div class="card">
+    <div class="prog-row"><div class="prog-l">Squat / Deadlift</div><div class="prog-v">+2.5–5kg per cycle. Conservative but compounds quickly. Don't chase weight at the cost of technique.</div></div>
+    <div class="prog-row"><div class="prog-l">OHP / Barbell Row</div><div class="prog-v">+1.25–2.5kg per cycle. Upper body progresses slower — respect that and don't force it.</div></div>
+    <div class="prog-row"><div class="prog-l">Hang weight</div><div class="prog-v">+2.5kg per cycle, or progress from BW to weighted once bodyweight hangs feel trivial. Track this number — it's one of the strongest climbing performance predictors.</div></div>
+    <div class="prog-row"><div class="prog-l">Board / wall grades</div><div class="prog-v">Peak week ceiling should move up one step every 1–2 cycles. Let the base phases do the work — the grade rise should feel almost automatic in peak week, not forced.</div></div>
+    <div class="prog-row"><div class="prog-l">Climbing volume</div><div class="prog-v">Add one session per week every 2 cycles if recovery permits. The natural jump is 3 → 4 sessions. Don't rush it.</div></div>
+  </div>
+
+  <div class="lbl">CYCLE SEQUENCE</div>
+  <div class="card">
+    <div class="prog-row"><div class="prog-l">Cycle 1 (Now)</div><div class="prog-v">Re-adaptation modifier active. No max hangs until week 3. No campus. Intensity ceiling capped weeks 1–2.</div></div>
+    <div class="prog-row"><div class="prog-l">Cycle 2</div><div class="prog-v">Full template. Max hangs from week 1. Campus board in intensity block. Full load progression.</div></div>
+    <div class="prog-row"><div class="prog-l">Cycles 3–4</div><div class="prog-v">Progressive load increases throughout. Should be at or approaching pre-injury levels by end of cycle 3 peak.</div></div>
+    <div class="prog-row"><div class="prog-l">Cycle 5+</div><div class="prog-v">Beyond pre-injury baseline — new ground. Adjust volume and intensity based on what the previous cycles have taught you about your specific response.</div></div>
+  </div>
+
+  <div class="lbl">WHEN A PEAK FEELS FLAT</div>
+  <div class="card card-accent" style="--accent:var(--gold)">
+    <p>Not every peak will be a breakthrough — some cycles you consolidate rather than jump. This is normal and doesn't mean the cycle failed. Trend across 3–4 mesocycles is what matters, not each individual peak. A flat peak typically means one of: insufficient volume weeks 1–2, poor sleep, nutrition lagging, or the body still adapting from the previous cycle. Identify which, adjust the next cycle, and move on.</p>
+  </div>
+
+  <div class="lbl">SIGNS TO BACK OFF</div>
+  <div class="card card-accent" style="--accent:var(--red)">
+    <div class="bul"><span class="bul-dot" style="color:var(--red)">◆</span><span>Any sharp or localised pain in fingers, pulleys, or tendons during a session — stop immediately</span></div>
+    <div class="bul"><span class="bul-dot" style="color:var(--red)">◆</span><span>Morning finger/forearm soreness that doesn't clear within 48 hours</span></div>
+    <div class="bul"><span class="bul-dot" style="color:var(--red)">◆</span><span>3+ consecutive nights of poor sleep — performance and recovery both collapse; reduce load before it compounds</span></div>
+    <div class="bul"><span class="bul-dot" style="color:var(--red)">◆</span><span>Grades dropping relative to the same phase last cycle — sign of accumulated fatigue, not fitness regression</span></div>
+  </div>
+
+  <div class="lbl">REFERENCES</div>
+  <div class="card">
+    <p style="line-height:2;font-size:11px;color:var(--faint)">
+      López et al. (2011) — Finger strength as predictor of elite bouldering performance<br>
+      Bohm et al. (2015) — Tendon adaptation timelines post-immobilisation<br>
+      Baar (2017) — Collagen synthesis and nutritional timing, UC Davis<br>
+      Draper et al. (2009) — Forearm blood flow and lactic tolerance in climbers<br>
+      Mujika & Padilla (2003) — Taper and supercompensation in trained athletes<br>
+      Vigouroux & Quaine (2006) — Finger force production and pulley mechanics
+    </p>
+  </div>
+
+</div>
+
+<script>
+// ─── NAV ───
+function showSec(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('sec-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ─── STRENGTH TOGGLE ───
+function showStr(which) {
+  document.getElementById('str-a').style.display = which === 'a' ? 'block' : 'none';
+  document.getElementById('str-b').style.display = which === 'b' ? 'block' : 'none';
+  document.getElementById('sta-a').classList.toggle('active', which === 'a');
+  document.getElementById('sta-b').classList.toggle('active', which === 'b');
+}
+
+// ─── DAY ACCORDION ───
+function toggleDay(el) {
+  const body = el.nextElementSibling;
+  const arr  = el.querySelector('.day-arr');
+  const open = body.classList.contains('open');
+  body.classList.toggle('open', !open);
+  arr.classList.toggle('open', !open);
+}
+
+// ─── WEEK DATA ───
+const weeks = [
+  {
+    num:1, lbl:'VOLUME', col:'blue',
+    note:'High volume, moderate intensity. Build load tolerance and re-establish movement patterns. 40–50 climbing problems across sessions. Strength at full volume. You won\'t feel your best — that\'s expected. You\'re making deposits.',
+    days:[
+      {d:'MON', t:'Wall Volume', bc:'b-blue', badge:'CLIMBING', body:`
+        <p><span class="hl">Focus:</span> Movement quality and volume. Not about grade today.</p>
+        <p><span class="hl">Session:</span> 6c–7b on the wall. Footwork drills — silent feet, precise placements. 40–50 problems across the session. Stop if finger tendons feel loaded, not when you feel cardiovascularly tired. 90 min.</p>
+        <p><span class="hl">Before:</span> Collagen + vitamin C 45 min pre-session. 15 min easy traversing warm-up.</p>`},
+      {d:'TUE', t:'Strength A — Push + Legs', bc:'b-purple', badge:'STRENGTH', body:`
+        <p><span class="hl">Session A in full.</span> See Strength tab for all exercises and loading.</p>
+        <p><span class="hl">Goal this week:</span> Establish your working weights. Don't go too heavy in week 1 — find a load that's challenging for the last 2 reps but not a grind. These are your cycle baselines to build from.</p>
+        <p><span class="hl">Duration:</span> 60–70 min including warm-up.</p>`},
+      {d:'WED', t:'Board Volume + Sauna', bc:'b-blue', badge:'CLIMBING', body:`
+        <p><span class="hl">Focus:</span> Board climbing, volume-oriented. Kilter at moderate angle.</p>
+        <p><span class="hl">Session:</span> 7a–7c problems. 35–45 moves. Not failure — pick problems you can do in 2–3 attempts. 80–90 min.</p>
+        <p><span class="hl">After:</span> Sauna 15–20 min. Hydrate well first. This is your mid-week recovery accelerator.</p>`},
+      {d:'THU', t:'Mobility Session', bc:'b-green', badge:'MOBILITY', body:`
+        <p><span class="hl">Full mobility routine.</span> See Mobility tab for the complete sequence. ~45 min.</p>
+        <p>Thursday is the breathing room between Wednesday and Friday climbing sessions. Don't rush it. Light walk or easy bike for 20 min afterward if you feel like moving.</p>`},
+      {d:'FRI', t:'Mixed Wall / Board', bc:'b-blue', badge:'CLIMBING', body:`
+        <p><span class="hl">Focus:</span> Mixed session. Reading problems, executing cleanly.</p>
+        <p><span class="hl">Session:</span> 6c–7b wall, then 7a–7c board. 80 min total. Still a volume day — don't chase limit problems. Probe slightly above your comfortable range to map your ceiling for the intensity phase ahead.</p>
+        <p><span class="hl">Cycle 1 only:</span> Keep ceiling at 6c–7a. Connective tissue is still loading up.</p>`},
+      {d:'SAT', t:'Strength B + Sauna', bc:'b-purple', badge:'STRENGTH', body:`
+        <p><span class="hl">Session B in full.</span> See Strength tab for exercises and loading.</p>
+        <p><span class="hl">Same principle as Tuesday:</span> Establish working weights, full sets and reps.</p>
+        <p><span class="hl">After:</span> Sauna. First full week done — you've earned it. Two rounds if feeling good, cold shower between.</p>`},
+      {d:'SUN', t:'Full Rest', bc:'b-gray', badge:'REST', rest:true}
+    ]
+  },
+  {
+    num:2, lbl:'VOLUME+', col:'blue',
+    note:'Volume increases ~10% from week 1. Same structure, slightly more problems per session. Add sub-max repeaters to Wednesday as part of the warm-up. Body is loaded — sleep and nutrition matter more than ever this week.',
+    days:[
+      {d:'MON', t:'Wall Volume +10%', bc:'b-blue', badge:'CLIMBING', body:`
+        <p><span class="hl">Push to 45–55 problems.</span> Nudge toward 7b–7b+ if feeling good. Add some longer traverses or link two problems together without rest to add load.</p>
+        <p><span class="hl">Key:</span> If fingers feel tender from week 1, maintain volume rather than adding. Tendons lag — they tell you the truth. 90–100 min.</p>`},
+      {d:'TUE', t:'Strength A (+5% load)', bc:'b-purple', badge:'STRENGTH', body:`
+        <p><span class="hl">Increase load slightly</span> from week 1 working weights. Squat +2.5–5kg, OHP +1.25–2.5kg. This is where the linear strength base begins to build.</p>
+        <p><span class="hl">Full volume:</span> 4 sets on all main lifts, accessory work unchanged.</p>`},
+      {d:'WED', t:'Board + Repeaters + Sauna', bc:'b-blue', badge:'CLIMBING', body:`
+        <p><span class="hl">Add sub-max repeaters:</span> 7s on / 3s off × 6 reps × 3 sets at ~65% max load, open hand. Do these after warm-up, before bouldering. This is the first structured finger loading of the cycle.</p>
+        <p><span class="hl">Board climbing:</span> 7a–7c, 35–45 moves as before. Sauna post. ~100 min total.</p>`},
+      {d:'THU', t:'Mobility Session', bc:'b-green', badge:'MOBILITY', body:`
+        <p><span class="hl">Full routine as week 1 Thursday.</span> Body is more loaded this week — take extra time on hip and hamstring work. If anything feels tighter than last week, add a second round on that stretch.</p>`},
+      {d:'FRI', t:'Ceiling Probe', bc:'b-blue', badge:'CLIMBING', body:`
+        <p><span class="hl">Focus:</span> Map your current ceiling. Not all-out limit attempts — find where your execution starts to break down.</p>
+        <p><span class="hl">Session:</span> Thorough warm-up, then try 3–4 problems at 7c–8a. 5+ min rests. Observe what fails first: fingers, technique, power, contact strength? This directly informs your intensity phase targeting.</p>
+        <p><span class="hl">Cycle 1 only:</span> Keep ceiling at 7b–7c. Don't push higher this cycle.</p>`},
+      {d:'SAT', t:'Strength B (+5% load) + Sauna', bc:'b-purple', badge:'STRENGTH', body:`
+        <p><span class="hl">Increase load from week 1.</span> Barbell row +2.5–5kg. If you hit 12+ pull-up reps on any set, add weight next cycle.</p>
+        <p>Two full loading weeks in — the sauna earns its keep tonight. Let it do its work.</p>`},
+      {d:'SUN', t:'Full Rest', bc:'b-gray', badge:'REST', rest:true}
+    ]
+  },
+  {
+    num:3, lbl:'INTENSITY', col:'orange',
+    note:'Volume drops ~30%. Load goes up. Introduce max hangs for the first time this cycle. Limit bouldering with full rest between attempts. Strength maintained at fewer sets, same or heavier load. You should start feeling sharper by mid-week.',
+    days:[
+      {d:'MON', t:'Max Hangs + Limit Boulder', bc:'b-orange', badge:'CLIMBING', body:`
+        <p><span class="hl">Max hangs:</span> 10s hang / 3 min rest × 5 sets. Half crimp primary. Start at ~75–80% of estimated max load — you'll calibrate and push load in week 4. Log the number.</p>
+        <p><span class="hl">Limit bouldering:</span> 3–5 problems near your ceiling. 5+ min rest between attempts. Stop when execution quality drops noticeably. This is about quality of movement under load, not racking up problems.</p>
+        <p><span class="hl">Duration:</span> 90 min — more rest means fewer problems. That's correct.</p>`},
+      {d:'TUE', t:'Strength A (3 sets)', bc:'b-purple', badge:'STRENGTH', body:`
+        <p><span class="hl">Drop to 3 sets</span> on all main lifts. Keep load at week 2 levels or go slightly heavier if it felt easy.</p>
+        <p><span class="hl">Accessory stays at full volume.</span> Face pulls and wrist work are light and don't contribute meaningfully to systemic fatigue.</p>`},
+      {d:'WED', t:'Board Intensity + Sauna', bc:'b-orange', badge:'CLIMBING', body:`
+        <p><span class="hl">Harder grades, less volume.</span> Quality over quantity.</p>
+        <p><span class="hl">Session:</span> 7c–8a on board. 15–20 problems maximum. Long rests. No hangboard this session — let Monday's hangs recover. Sauna post.</p>
+        <p><span class="hl">Cycle 1 only:</span> 7b–7c ceiling. Campus board still excluded.</p>`},
+      {d:'THU', t:'Mobility — Extended', bc:'b-green', badge:'MOBILITY', body:`
+        <p><span class="hl">Full routine + extra time</span> on whatever felt tight Monday and Wednesday. Intensity weeks accumulate more targeted fatigue — use Thursday to address it directly.</p>
+        <p>Optional: 20 min easy walk or light bike after. Keep blood moving without adding training load.</p>`},
+      {d:'FRI', t:'Project Session', bc:'b-orange', badge:'CLIMBING', body:`
+        <p><span class="hl">Focus:</span> Specific moves, specific sequences. Work actual projects.</p>
+        <p><span class="hl">Session:</span> Pick 1–2 problems at your current limit. Break them into sections. Work the crux. 8–12 quality attempts total across the session. 75 min max. This is intentional low volume — you're not here to accumulate, you're here to learn the moves.</p>`},
+      {d:'SAT', t:'Strength B (3 sets) + Sauna', bc:'b-purple', badge:'STRENGTH', body:`
+        <p><span class="hl">3 sets on main lifts.</span> Same principle as Tuesday — heavy, short, efficient. Same load as week 2 or slightly more if recovery is good.</p>
+        <p>End of first intensity week. The adaptation is running — let the sauna and Sunday rest finish the job.</p>`},
+      {d:'SUN', t:'Full Rest', bc:'b-gray', badge:'REST', rest:true}
+    ]
+  },
+  {
+    num:4, lbl:'INTENSITY+', col:'orange',
+    note:'Peak load week. Highest intensity of the cycle. Max hang loads go up from week 3. Limit bouldering at absolute ceiling. Campus board introduced in cycle 2+. Strength maintained. If you\'re not sleeping well this week, prioritise that above everything.',
+    days:[
+      {d:'MON', t:'Heavy Max Hangs + Limit', bc:'b-orange', badge:'CLIMBING', body:`
+        <p><span class="hl">Max hangs:</span> Push load up from week 3. 10s / 4 min rest × 5 sets. Work toward a weight where 10s is genuinely the limit — that's your training max. Log it. This number should go up each cycle.</p>
+        <p><span class="hl">Limit bouldering:</span> 3–5 attempts at absolute ceiling. 6–8 min rest between. Highest intensity climbing session of the cycle. Stop when power drops perceptibly — don't grind through bad attempts.</p>
+        <p><span class="hl">Cycle 2+ only:</span> Add campus board (1-3-5 laddering, 3 sets × 3 reps) between hangs and bouldering.</p>`},
+      {d:'TUE', t:'Strength A — Heavy', bc:'b-purple', badge:'STRENGTH', body:`
+        <p><span class="hl">3 sets, heaviest of the cycle.</span> This is your peak strength stimulus. Push for a small personal best on squat and OHP if the warm-up sets feel strong. Don't grind through form breakdown — leave something for Friday.</p>`},
+      {d:'WED', t:'Board Intensity + Sauna', bc:'b-orange', badge:'CLIMBING', body:`
+        <p><span class="hl">Push grade ceiling on board.</span> 8a–8a+ territory if you're there. 12–18 problems, very long rests. This is about expressing power, not endurance. Sauna post.</p>
+        <p><span class="hl">Cycle 2+:</span> Optionally add campus doubles (1-4, 1-5, 3 sets) at the start before the bouldering.</p>`},
+      {d:'THU', t:'Mobility Session', bc:'b-green', badge:'MOBILITY', body:`
+        <p><span class="hl">Full routine.</span> Peak load week — body is working hard at adaptation. Prioritise shoulder and hip work. Go slow and breathe into the stretches — parasympathetic activation here actively supports Friday's recovery.</p>`},
+      {d:'FRI', t:'Projects + RFD Work', bc:'b-orange', badge:'CLIMBING', body:`
+        <p><span class="hl">Focus:</span> Projects and explosive single moves.</p>
+        <p><span class="hl">Session:</span> Go at your target problems with full intention. Supplement with 5–8 explosive single moves — dynamic reaches, big dynos — to train Rate of Force Development. 75–90 min. This is the peak climbing effort of the entire cycle.</p>`},
+      {d:'SAT', t:'Strength B + Sauna', bc:'b-purple', badge:'STRENGTH', body:`
+        <p><span class="hl">3 sets, same load as Tuesday or slightly lighter</span> if legs feel loaded from heavy squatting. Pull-up numbers should feel strong this week.</p>
+        <p>End of the heaviest week. Next week is peak. The adaptation is happening now, while you rest.</p>`},
+      {d:'SUN', t:'Full Rest', bc:'b-gray', badge:'REST', rest:true}
+    ]
+  },
+  {
+    num:5, lbl:'PEAK', col:'gold',
+    note:'You are stronger than you feel — accumulated fatigue is masking it. Volume drops 40–50%. One light strength session. 2–3 sharp climbing sessions. CNS and connective tissue get full recovery. Go at your limits and see what four weeks of work built.',
+    days:[
+      {d:'MON', t:'Sharp Board Session', bc:'b-gold', badge:'CLIMBING', body:`
+        <p><span class="hl">Warm up thoroughly</span> — 20 min easy, get blood into the fingers before touching anything hard.</p>
+        <p><span class="hl">3–5 limit problems.</span> Long rests. Feel the shift from week 2 — it should be noticeable. Stop after 60 min maximum. Leave feeling sharp, not empty. No hangboard today.</p>`},
+      {d:'TUE', t:'Light Combined Strength', bc:'b-purple', badge:'STRENGTH', body:`
+        <p><span class="hl">One combined A+B session.</span> 60% of working loads. Squat 3×5, OHP 3×5, Barbell Row 3×5, Pull-ups 2×8. Skip Bulgarian and RDL — keep it short and non-fatiguing.</p>
+        <p><span class="hl">Purpose:</span> Maintain neuromuscular readiness without adding fatigue. 45 min max. In and out.</p>`},
+      {d:'WED', t:'Project Day', bc:'b-gold', badge:'CLIMBING', body:`
+        <p><span class="hl">This is it.</span> Go at your actual target problems with full send mentality. Warm up well, then attack what you've been building toward.</p>
+        <p><span class="hl">8+ min rests between serious attempts.</span> Quality of effort over quantity. Outdoor session today if at all possible — real rock often produces breakthroughs the gym doesn't.</p>
+        <p><span class="hl">Sauna optional</span> — skip if you have another session planned tomorrow.</p>`},
+      {d:'THU', t:'Full Rest', bc:'b-gray', badge:'REST', rest:true},
+      {d:'FRI', t:'Optional — Maintenance', bc:'b-gold', badge:'CLIMBING', body:`
+        <p><span class="hl">Only if feeling flat or stale.</span> If you feel sharp and fresh, skip this entirely — that's the right call.</p>
+        <p><span class="hl">If you go:</span> 7a–7b, easy movement, nothing near limit. 45–60 min. Prime the CNS without loading it.</p>`},
+      {d:'SAT', t:'Rest or Outdoor', bc:'b-gray', badge:'REST', body:`
+        <p><span class="hl">Outdoor session if weather permits</span> — treat it like Wednesday. Warm up, long rests, go at your projects on real rock.</p>
+        <p>Otherwise rest. Reflect on the cycle: what landed, what lagged, what to adjust going into cycle 2.</p>`},
+      {d:'SUN', t:'Full Rest', bc:'b-gray', badge:'REST', rest:true}
+    ]
+  }
+];
+
+// ─── BUILD SCHEDULE ───
+(function buildSchedule() {
+  const sel = document.getElementById('wsel');
+  const con = document.getElementById('wcontent');
+
+  weeks.forEach((w, i) => {
+    // selector button
+    const btn = document.createElement('button');
+    btn.className = 'wbtn';
+    btn.id = 'wb' + i;
+    btn.innerHTML = `<div class="wn">W${w.num}</div><div class="wl">${w.lbl}</div>`;
+    btn.onclick = () => switchWeek(i);
+    sel.appendChild(btn);
+
+    // week container
+    const div = document.createElement('div');
+    div.id = 'wc' + i;
+    div.style.display = 'none';
+
+    let html = `<div class="week-note">${w.note}</div>`;
+
+    w.days.forEach(day => {
+      if (day.rest && day.d === 'SUN') {
+        html += `<div class="rest-row"><div class="rest-dot"></div><span class="rest-t"><strong style="color:var(--text)">${day.d}</strong> — Full rest. Adaptation happens here, not in the gym.</span></div>`;
+      } else if (day.rest) {
+        html += `<div class="rest-row"><div class="rest-dot"></div><span class="rest-t"><strong style="color:var(--text)">${day.d}</strong> — ${day.t}</span></div>`;
+      } else {
+        html += `<div class="day-card">
+          <div class="day-head" onclick="toggleDay(this)">
+            <div class="day-left">
+              <span class="day-d">${day.d}</span>
+              <span class="badge ${day.bc}">${day.badge}</span>
+              <span class="day-t">${day.t}</span>
+            </div>
+            <span class="day-arr">▼</span>
+          </div>
+          <div class="day-body">${day.body || ''}</div>
+        </div>`;
+      }
+    });
+
+    div.innerHTML = html;
+    con.appendChild(div);
+  });
+
+  switchWeek(0);
+})();
+
+function switchWeek(i) {
+  const colorMap = ['blue','blue','orange','orange','gold'];
+  weeks.forEach((w, j) => {
+    const btn = document.getElementById('wb' + j);
+    const con = document.getElementById('wc' + j);
+    btn.className = 'wbtn' + (j === i ? ' on-' + colorMap[j] : '');
+    con.style.display = j === i ? 'block' : 'none';
+  });
+}
+</script>
+</body>
+</html>
