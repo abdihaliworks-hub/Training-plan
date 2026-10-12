@@ -1,0 +1,27 @@
+{
+  "name": "tenacity-tendons",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Board — 16 week climbing training block. Web app (PWA) + Android app (Capacitor).",
+  "scripts": {
+    "vendor": "node scripts/vendor.js",
+    "serve": "npx http-server www -p 8000 -c-1",
+    "android:sync": "npm run vendor && npx cap sync android"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^7.4.0"
+  },
+  "dependencies": {
+    "@capacitor/android": "^7.4.0",
+    "@capacitor/core": "^7.4.0",
+    "@capacitor/filesystem": "^7.1.0",
+    "@capacitor/share": "^7.0.0",
+    "@fontsource/archivo": "^5.2.5",
+    "@fontsource/ibm-plex-mono": "^5.2.5",
+    "@fontsource/ibm-plex-sans": "^5.2.5",
+    "@tesseract.js-data/eng": "^1.0.0",
+    "@tesseract.js-data/nor": "^1.0.0",
+    "tesseract.js": "^6.0.1",
+    "tesseract.js-core": "^6.0.0"
+  }
+}

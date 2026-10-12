@@ -1,0 +1,17 @@
+# Netlify: connect this repo and it builds + publishes the web app from www/.
+[build]
+  command = "npm ci && npm run vendor"
+  publish = "www"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# always check for a fresh service worker / app files
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache"
+[[headers]]
+  for = "/manifest.webmanifest"
+  [headers.values]
+    Content-Type = "application/manifest+json"
