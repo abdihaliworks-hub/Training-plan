@@ -31,6 +31,23 @@ body {
 h1 { font-size: clamp(24px, 6vw, 38px); font-weight: 900; letter-spacing: -0.02em; color: #f8fafc; line-height: 1.1; }
 .header-sub { font-size: 11px; color: var(--faint); margin-top: 5px; margin-bottom: 20px; }
 
+/* INSTALL BUTTON (only shown when the browser can install the app) */
+.install-btn {
+  display: inline-block;
+  margin: -8px 0 18px;
+  padding: 9px 14px;
+  background: #34d39914;
+  border: 1px solid #34d39955;
+  border-radius: 6px;
+  color: var(--green);
+  font-family: 'Courier New', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  cursor: pointer;
+}
+.install-btn[hidden] { display: none; }
+
 /* MAIN NAV */
 .main-nav {
   display: flex;

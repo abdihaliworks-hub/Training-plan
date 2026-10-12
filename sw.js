@@ -1,6 +1,6 @@
 // Service worker — lets the app open offline once installed.
 // Bump CACHE_VERSION whenever you change any file so phones pick up the update.
-const CACHE_VERSION = 'training-plan-v1';
+const CACHE_VERSION = 'training-plan-v2';
 const ASSETS = [
   './',
   './index.html',

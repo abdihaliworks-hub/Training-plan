@@ -221,3 +221,22 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js').catch(err => console.warn('Service worker registration failed:', err));
   });
 }
+
+// ─── INSTALL BUTTON ───
+// Chrome fires this only when the site qualifies as an installable app.
+// Clicking the button opens Chrome's real "Install app" dialog.
+let installPrompt = null;
+const installBtn = document.getElementById('install-btn');
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  installPrompt = e;
+  installBtn.hidden = false;
+});
+installBtn.addEventListener('click', async () => {
+  if (!installPrompt) return;
+  installPrompt.prompt();
+  await installPrompt.userChoice;
+  installPrompt = null;
+  installBtn.hidden = true;
+});
+window.addEventListener('appinstalled', () => { installBtn.hidden = true; });

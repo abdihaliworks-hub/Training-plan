@@ -18,9 +18,11 @@ The site is a Progressive Web App (PWA). To install it, it has to be served over
 
 1. On GitHub, open **Settings → Pages**, set **Source** to *Deploy from a branch*, choose the branch (e.g. `main`) and `/ (root)`, then save.
 2. After a minute it is live at `https://<your-username>.github.io/Training-plan/`.
-3. Open that link in **Chrome on Android**, tap the **⋮** menu, then **Install app** (or **Add to Home screen**).
+3. Open that link in **Chrome on Android** and tap the green **⬇ INSTALL APP** button under the title (or **⋮ → Install app**).
 
-It then opens full-screen from its own icon and works offline.
+It then shows up in the app drawer, opens full-screen without the browser bar, and works offline.
+
+> Don't use **Create shortcut**, the **⬇ Download** icon, or open a downloaded copy of the file — those only save the page and open it in the browser. If you did that before, remove that home-screen icon and install again from the link above.
 
 > When you change any file, bump `CACHE_VERSION` in `sw.js` (e.g. `training-plan-v2`) so installed copies pick up the update.
 
