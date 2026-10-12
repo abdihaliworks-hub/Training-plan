@@ -51,7 +51,7 @@ function checkStorage(){
   }catch(e){STORAGE_OK=false;}
 }
 /* food: {entries:[...], foods:{id:{...}}} — see food.js for the record shapes */
-var S={start:defaultStart(),log:{},ready:{},tests:{},food:{entries:[],foods:{}}};
+var S={start:defaultStart(),log:{},ready:{},tests:{},food:{entries:[],foods:{}},vitals:{}};
 var saveT=null;
 function save(){
   clearTimeout(saveT);

@@ -19,6 +19,7 @@
     "@fontsource/archivo": "^5.2.5",
     "@fontsource/ibm-plex-mono": "^5.2.5",
     "@fontsource/ibm-plex-sans": "^5.2.5",
+    "@kiwi-health/capacitor-health-connect": "^0.0.43",
     "@tesseract.js-data/eng": "^1.0.0",
     "@tesseract.js-data/nor": "^1.0.0",
     "tesseract.js": "^6.0.1",
