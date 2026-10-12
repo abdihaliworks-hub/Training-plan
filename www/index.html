@@ -20,6 +20,7 @@
 <script src="js/backup.js" defer></script>
 <script src="js/ocr.js" defer></script>
 <script src="js/food.js" defer></script>
+<script src="js/health.js" defer></script>
 <script src="js/app.js" defer></script>
 <script src="js/pwa.js" defer></script>
 </head>
@@ -48,12 +49,18 @@
       </div>
     </div>
 
+    <div class="card led hide" id="bandCard" style="--c:var(--led-green)">
+      <div class="label">Band · Xiaomi Smart Band 9 Pro</div>
+      <div id="bandBody"></div>
+    </div>
+
     <div class="card">
       <div class="label">Morning check</div>
       <div class="grid2">
         <div class="field"><label>Resting HR</label><input type="number" id="inRhr" inputmode="numeric" placeholder="58"></div>
         <div class="field"><label>HRV (ms)</label><input type="number" id="inHrv" inputmode="numeric" placeholder="—"></div>
       </div>
+      <p class="tiny hide" id="bandNote" style="margin-top:6px">Filled in from your band. Type over it to change it.</p>
       <div id="sliders"></div>
       <div class="verdict" id="verdict" style="--c:var(--led-dim)">
         <div class="t">Enter your numbers</div>

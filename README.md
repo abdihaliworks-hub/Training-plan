@@ -17,6 +17,7 @@ www/                    The app (this is what the website and the Android app bo
   js/backup.js          Export / restore / automatic backups
   js/ocr.js             Nutrition label scanner (on-device OCR, English + Norwegian)
   js/food.js            Food log, My foods, units, daily bars, week/month/year charts
+  js/health.js          Smart band data via Health Connect (Android app only)
   js/app.js             Today / Plan / Log / Why screens, navigation, start-up
   js/pwa.js             Web-app install + "Download Android app" card
   sw.js, manifest.webmanifest, icons/
@@ -36,6 +37,15 @@ The app stores data inside itself, and writes an automatic backup to `Documents/
 **Moving data from the old wrapped app / website:** in the old version open **Log → Backup → Copy backup as text** (or Export backup), then in the new app use **Restore from text** (or Restore from file).
 
 **Signing key:** builds are signed with `android/keystore/board.jks` so every update installs over the previous one. The repo is public, so that key is too. To use a private key instead, add the GitHub secrets `BOARD_KEYSTORE_BASE64`, `BOARD_KEYSTORE_PASSWORD`, `BOARD_KEY_ALIAS`, `BOARD_KEY_PASSWORD` — but switching keys means uninstalling the old app once (restore from the automatic backup afterwards).
+
+## Smart band (Xiaomi Smart Band 9 Pro)
+
+Android app only. The band syncs to **Mi Fitness**, Mi Fitness shares to Android's **Health Connect**, and the app reads from Health Connect (read-only):
+
+1. In Mi Fitness, turn on syncing to Health Connect (in your profile / settings).
+2. In the app, Today → **Band** card → **Connect**, and allow heart rate, sleep and steps.
+
+The Today screen then shows resting heart rate (vs your 7-day average), last night's sleep and today's steps, and fills in the morning check. A value you type yourself is never overwritten. If Mi Fitness doesn't share a resting-HR value, it is estimated from your heart rate while asleep. Each day is stored in `vitals` in the app data and included in backups. On Android 13 and older, Health Connect is a separate app from the Play Store.
 
 ## Website (Netlify)
 

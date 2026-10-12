@@ -26,9 +26,11 @@ var Backup={
         daysLogged:Object.keys(S.log||{}).length,
         readinessDays:Object.keys(S.ready||{}).length,
         foodEntries:(food.entries||[]).length,
-        savedFoods:Object.keys(food.foods||{}).length
+        savedFoods:Object.keys(food.foods||{}).length,
+        bandDays:Object.keys(S.vitals||{}).length
       },
-      units:{energy:'kcal',protein:'g',carbs:'g',fat:'g',amounts:'grams (converted from the unit logged)'},
+      units:{energy:'kcal',protein:'g',carbs:'g',fat:'g',amounts:'grams (converted from the unit logged)',
+        restingHR:'bpm',hrv:'ms',sleep:'minutes asleep',steps:'count'},
       data:S
     };
   },
@@ -175,7 +177,7 @@ function parseBackup(text){
   if(!d||typeof d!=='object'||Array.isArray(d))throw new Error('This is not a backup from this app.');
   var out={},found=false;
   if(typeof d.start==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(d.start)){out.start=d.start;found=true;}
-  ['log','ready','tests'].forEach(function(k){
+  ['log','ready','tests','vitals'].forEach(function(k){
     if(d[k]&&typeof d[k]==='object'&&!Array.isArray(d[k])){out[k]=d[k];found=true;}
   });
   if(d.food&&typeof d.food==='object'){out.food=normalizeFood(d.food);found=true;}
