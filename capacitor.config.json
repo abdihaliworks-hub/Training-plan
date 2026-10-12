@@ -1,0 +1,9 @@
+{
+  "appId": "app.tenacitytendons.board",
+  "appName": "Board",
+  "webDir": "www",
+  "android": {
+    "allowMixedContent": false,
+    "backgroundColor": "#0B0E10"
+  }
+}

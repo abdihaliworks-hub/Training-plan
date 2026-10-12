@@ -1,0 +1,80 @@
+# Builds the Android app (APK) and publishes it as a GitHub Release.
+# The website's "Download Android app" button always points at the newest release:
+#   https://github.com/abdihaliworks-hub/Training-plan/releases/latest/download/tenacity-tendons.apk
+name: Android app
+
+on:
+  push:
+    branches: [main]
+    paths: ['www/**', 'android/**', 'package.json', 'package-lock.json', 'capacitor.config.json', 'scripts/**', '.github/workflows/android.yml']
+  pull_request:
+    paths: ['www/**', 'android/**', 'package.json', 'package-lock.json', 'capacitor.config.json', 'scripts/**', '.github/workflows/android.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Install, bundle web app, copy into Android project
+        run: |
+          npm ci
+          npm run vendor
+          npx cap sync android
+
+      - name: Use private signing key if configured
+        env:
+          KEYSTORE_B64: ${{ secrets.BOARD_KEYSTORE_BASE64 }}
+        if: env.KEYSTORE_B64 != ''
+        run: |
+          echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/board.jks"
+          echo "BOARD_KEYSTORE=$RUNNER_TEMP/board.jks" >> "$GITHUB_ENV"
+
+      - name: Build APK
+        working-directory: android
+        env:
+          BUILD_NUMBER: ${{ github.run_number }}
+          BOARD_KEYSTORE_PASSWORD: ${{ secrets.BOARD_KEYSTORE_PASSWORD }}
+          BOARD_KEY_ALIAS: ${{ secrets.BOARD_KEY_ALIAS }}
+          BOARD_KEY_PASSWORD: ${{ secrets.BOARD_KEY_PASSWORD }}
+        run: |
+          # empty secrets must not override the defaults in build.gradle
+          [ -z "$BOARD_KEYSTORE_PASSWORD" ] && unset BOARD_KEYSTORE_PASSWORD
+          [ -z "$BOARD_KEY_ALIAS" ] && unset BOARD_KEY_ALIAS
+          [ -z "$BOARD_KEY_PASSWORD" ] && unset BOARD_KEY_PASSWORD
+          chmod +x gradlew
+          ./gradlew assembleRelease --no-daemon --stacktrace
+          cp app/build/outputs/apk/release/app-release.apk "$GITHUB_WORKSPACE/tenacity-tendons.apk"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tenacity-tendons-apk
+          path: tenacity-tendons.apk
+
+      - name: Publish release
+        if: github.event_name != 'pull_request'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: android-v${{ github.run_number }}
+          name: Board Android app (build ${{ github.run_number }})
+          body: |
+            Install: open this page on your Android phone, tap **tenacity-tendons.apk**, then open the download.
+            If Android asks, allow installing apps from your browser. Updates install over the old version and keep your data.
+          files: tenacity-tendons.apk
+          make_latest: true

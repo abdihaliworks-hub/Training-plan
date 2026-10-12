@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0B0E10">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Board">
+<title>Board — 16 week block</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="stylesheet" href="css/fonts.css">
+<link rel="stylesheet" href="css/styles.css">
+<script src="vendor/capacitor.js"></script>
+<script src="js/storage.js" defer></script>
+<script src="js/plan.js" defer></script>
+<script src="js/backup.js" defer></script>
+<script src="js/ocr.js" defer></script>
+<script src="js/food.js" defer></script>
+<script src="js/app.js" defer></script>
+<script src="js/pwa.js" defer></script>
+</head>
+<body>
+
+<header>
+  <div class="hdr-row">
+    <div>
+      <div class="eyebrow" id="hdrEyebrow">Cycle A · Capacity</div>
+      <h1 id="hdrTitle">Today</h1>
+    </div>
+    <div class="pos" id="hdrPos"></div>
+  </div>
+</header>
+
+<main>
+  <!-- ═══════════ TODAY ═══════════ -->
+  <section id="view-today">
+    <div class="card hide" id="getApp">
+      <div class="label">Get the app</div>
+      <p class="tiny" style="margin-top:0" id="getAppText"></p>
+      <div class="btnrow">
+        <a class="btn" id="btnApk" href="#" style="--c:var(--led-green)">Download Android app</a>
+        <button class="btn hide" id="btnInstall">Install web app</button>
+        <button class="btn ghost sm" id="btnGetAppClose" aria-label="Hide">Not now</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="label">Morning check</div>
+      <div class="grid2">
+        <div class="field"><label>Resting HR</label><input type="number" id="inRhr" inputmode="numeric" placeholder="58"></div>
+        <div class="field"><label>HRV (ms)</label><input type="number" id="inHrv" inputmode="numeric" placeholder="—"></div>
+      </div>
+      <div id="sliders"></div>
+      <div class="verdict" id="verdict" style="--c:var(--led-dim)">
+        <div class="t">Enter your numbers</div>
+        <p>Resting HR is the one that matters most. Your peak baseline was 52–55.</p>
+      </div>
+    </div>
+
+    <div class="card led" id="sessionCard">
+      <div class="label"><span class="dot"></span><span id="sessName"></span></div>
+      <h2 id="sessTitle"></h2>
+      <div class="feel" id="sessFeel"></div>
+      <div id="sessBody"></div>
+      <div class="btnrow">
+        <button class="btn" id="btnFull" style="--c:var(--led-green)">Did it</button>
+        <button class="btn" id="btnMin" style="--c:var(--led-yellow)">Did the minimum</button>
+      </div>
+      <details><summary>Bad day? Minimum version</summary><p id="sessFallback"></p></details>
+    </div>
+
+    <div class="card led" style="--c:var(--led-yellow)">
+      <div class="label">Fuel · <span id="fuelType"></span></div>
+      <div class="macros" id="macros"></div>
+      <div class="note" id="fuelNote"></div>
+      <div class="btnrow"><button class="btn ghost sm" id="toEat">Meals &amp; supplements →</button></div>
+    </div>
+  </section>
+
+  <!-- ═══════════ PLAN ═══════════ -->
+  <section id="view-plan" class="hide">
+    <div class="card" id="boardCard">
+      <div class="label">16 weeks · 3 nested cycles</div>
+      <h2>The board</h2>
+      <p class="tiny" style="margin-top:2px">Each hold is one day. Tap to open it. Filled = done, half-lit = minimum, ringed = today.</p>
+      <div id="board" style="margin-top:14px"></div>
+      <div class="legend">
+        <span><i class="dot" style="--c:var(--led-blue)"></i>Skill</span>
+        <span><i class="dot" style="--c:var(--led-yellow)"></i>Strength</span>
+        <span><i class="dot" style="--c:var(--led-magenta)"></i>Fingers</span>
+        <span><i class="dot" style="--c:var(--led-green)"></i>Limit</span>
+        <span><i class="dot" style="--c:var(--led-dim)"></i>Rest</span>
+      </div>
+    </div>
+    <div class="plan-side">
+      <div id="peekCard" class="hide"></div>
+      <div class="card">
+        <div class="label">Start date</div>
+        <p class="tiny" style="margin-top:0">Week 1, Monday. Change it if you shift the block.</p>
+        <input type="date" id="inStart" class="input">
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ LOG ═══════════ -->
+  <section id="view-log" class="hide">
+    <div class="card">
+      <div class="label">Where you are</div>
+      <div class="stats" id="stats"></div>
+      <div class="note" id="streakNote"></div>
+      <div class="hide" id="storageWarn"></div>
+    </div>
+    <div class="card">
+      <div class="label">History</div>
+      <div id="history" style="margin-top:8px"></div>
+    </div>
+    <div class="card" id="backupCard">
+      <div class="label">Backup</div>
+      <p class="tiny" style="margin-top:0" id="backupIntro"></p>
+      <div class="note" id="backupStatus"></div>
+      <div class="btnrow">
+        <button class="btn" id="btnExport">Export backup</button>
+        <button class="btn ghost" id="btnImport">Restore from file</button>
+      </div>
+      <div class="btnrow" style="margin-top:8px">
+        <button class="btn ghost sm" id="btnCopyBackup">Copy backup as text</button>
+        <button class="btn ghost sm" id="btnPasteBackup">Restore from text</button>
+      </div>
+      <input type="file" id="fileImport" accept="application/json,.json,text/plain" style="display:none">
+    </div>
+    <div class="card">
+      <div class="label">Test battery</div>
+      <h2>Does the floor move?</h2>
+      <p class="tiny" style="margin-top:2px">Retest at the end of every cycle. Same edge, same warm-up, same time of day.</p>
+      <div id="tests" style="margin-top:12px"></div>
+    </div>
+  </section>
+
+  <!-- ═══════════ EAT ═══════════ -->
+  <section id="view-eat" class="hide">
+    <div class="card led" style="--c:var(--led-yellow)" id="dayCard">
+      <div class="daynav">
+        <button class="btn sm ghost" id="dayPrev" aria-label="Previous day">‹</button>
+        <div class="daynav-mid">
+          <div class="label" style="margin:0" id="dayType"></div>
+          <h2 id="dayTitle"></h2>
+        </div>
+        <button class="btn sm ghost" id="dayNext" aria-label="Next day">›</button>
+      </div>
+      <div id="dayBars"></div>
+      <div class="btnrow">
+        <button class="btn" id="btnScan" style="--c:var(--led-yellow)">📷 Scan label</button>
+        <button class="btn" id="btnFoods">My foods</button>
+        <button class="btn" id="btnQuick">Quick macros</button>
+      </div>
+      <input type="file" id="fileScan" accept="image/*" capture="environment" style="display:none">
+    </div>
+
+    <div class="card">
+      <div class="label">Logged <span id="dayCount"></span></div>
+      <div id="dayEntries"></div>
+    </div>
+
+    <div class="card">
+      <div class="label">Calorie intake</div>
+      <div class="seg" id="trendTabs" role="tablist">
+        <button data-r="week" class="on" role="tab">Week</button>
+        <button data-r="month" role="tab">Month</button>
+        <button data-r="year" role="tab">Year</button>
+      </div>
+      <div id="trendStats" class="stats" style="margin-top:12px"></div>
+      <div id="trendChart" class="chart"></div>
+      <p class="tiny" id="trendNote"></p>
+    </div>
+
+    <div class="card">
+      <div class="label">Targets · 72 kg</div>
+      <h2>Three day types</h2>
+      <div id="fuelTable" style="margin-top:10px"></div>
+      <div class="note"><b>Never a deficit.</b> You want strength and skill, you are already lean, and climbers are a documented under-eating risk group. Weigh yourself weekly and adjust by ±200 kcal to hold steady or gain very slowly.</div>
+    </div>
+    <div class="card led" style="--c:var(--led-yellow)">
+      <div class="label">Meals</div>
+      <div id="meals" style="margin-top:6px"></div>
+    </div>
+    <div class="card">
+      <div class="label">Supplements</div>
+      <div id="supps" style="margin-top:6px"></div>
+    </div>
+  </section>
+
+  <!-- ═══════════ WHY ═══════════ -->
+  <section id="view-why" class="hide">
+    <div class="card led" style="--c:var(--led-magenta)">
+      <div class="label">The diagnosis</div>
+      <h2>Why the baseline stopped moving</h2>
+      <p style="color:var(--ink-2);font-size:14px">You reset every five weeks and re-peak to the same numbers. That re-expresses fitness you already have, mostly neural, instead of building the slow structural kind. Peak power comes back within two to three weeks. Capacity takes months. You have been harvesting the fast quality and never accumulating the slow one.</p>
+      <div class="note"><b>The fix:</b> keep the five-week loop you like, but nest three of them. Each new cycle's volume weeks start from the previous cycle's achieved numbers, not from zero. Week 5 becomes a test week rather than a full taper. The shape stays identical; the floor climbs.</div>
+    </div>
+    <div class="card">
+      <div class="label">The ingredients · tap one to open it</div>
+      <div id="why" class="chips"></div>
+      <div id="whyDetail"></div>
+    </div>
+    <div class="card">
+      <div class="label">Honest caveats</div>
+      <ul style="color:var(--ink-2);font-size:13.5px;padding-left:18px;margin:6px 0 0">
+        <li>Periodization for climbing is barely researched. This structure is a reasoned synthesis, not a validated protocol.</li>
+        <li>Seven months post-op and pain-free, your hand is not the limiter — inconsistency is. But if pain returns under load, that outranks the plan.</li>
+        <li>Collagen evidence is promising, not settled, and only works alongside loading.</li>
+        <li>Finger-extensor bands have weak evidence for injury prevention. Cheap, so included; do not over-trust them.</li>
+        <li>Abrahangs are real but over-hyped. Do not let them crowd out real strength work once you are cleared.</li>
+        <li>Wrist HRV is noisy. Use weekly trends, never single days.</li>
+        <li>Persistent fatigue, illness, low mood or stalled progress despite good training means see a sports physician. Low energy availability is the usual culprit.</li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<!-- bottom sheet used by food logging, backups and dialogs -->
+<div class="sheet-bg hide" id="sheetBg"></div>
+<div class="sheet hide" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+  <div class="sheet-hd">
+    <h2 id="sheetTitle"></h2>
+    <button class="btn sm ghost" id="sheetClose" aria-label="Close">✕</button>
+  </div>
+  <div id="sheetBody"></div>
+</div>
+
+<div class="saveflash" id="flash">Saved</div>
+
+<nav>
+  <button data-v="today" class="on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Today</button>
+  <button data-v="plan"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>Plan</button>
+  <button data-v="log"><svg viewBox="0 0 24 24"><path d="M4 19V5M4 19h16"/><path d="M8 15l4-5 3 3 4-6"/></svg>Log</button>
+  <button data-v="eat"><svg viewBox="0 0 24 24"><path d="M6 3v8a3 3 0 0 0 6 0V3M9 11v10"/><path d="M17 3c-1.5 2-2 4-2 6a2 2 0 0 0 2 2v10"/></svg>Eat</button>
+  <button data-v="why"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.6 2.6 0 0 1 5 1c0 1.7-2.5 2-2.5 3.5"/><circle cx="12" cy="17.5" r=".6" fill="currentColor"/></svg>Why</button>
+</nav>
+
+</body>
+</html>
