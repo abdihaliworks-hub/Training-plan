@@ -8,8 +8,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         // CI sets BUILD_NUMBER so every new APK installs as an update over the old one
-        versionCode (System.getenv("BUILD_NUMBER") ?: "1").toInteger()
-        versionName "2.0." + (System.getenv("BUILD_NUMBER") ?: "0")
+        versionCode(Integer.parseInt(System.getenv("BUILD_NUMBER") ?: "1"))
+        versionName("2.0." + (System.getenv("BUILD_NUMBER") ?: "0"))
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -22,9 +22,9 @@ android {
     signingConfigs {
         board {
             storeFile file(System.getenv("BOARD_KEYSTORE") ?: "../keystore/board.jks")
-            storePassword System.getenv("BOARD_KEYSTORE_PASSWORD") ?: "boardapp"
-            keyAlias System.getenv("BOARD_KEY_ALIAS") ?: "board"
-            keyPassword System.getenv("BOARD_KEY_PASSWORD") ?: "boardapp"
+            storePassword(System.getenv("BOARD_KEYSTORE_PASSWORD") ?: "boardapp")
+            keyAlias(System.getenv("BOARD_KEY_ALIAS") ?: "board")
+            keyPassword(System.getenv("BOARD_KEY_PASSWORD") ?: "boardapp")
         }
     }
     buildTypes {
